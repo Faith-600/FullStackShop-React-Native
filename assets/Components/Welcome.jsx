@@ -244,14 +244,16 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginBottom: 10,
-    width:"15%",
-    marginRight:250
+    width:"20%",
+    marginRight:200
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-    textAlign:"center"
+    textAlign:"center",
+   
+    
   },
   errorText: {
     color: "red",
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     borderTopColor:"rgb(93, 178, 221)",
-    borderTopWidth: 2, 
+    borderTopWidth: 1, 
      borderBottomLeftRadius: 10, 
     borderBottomRightRadius: 10,
     shadowColor: "#aaa", 

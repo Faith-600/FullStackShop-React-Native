@@ -132,11 +132,14 @@ const styles = StyleSheet.create({
   signInText: {
     fontSize: 14,
     color: "#555",
-    // marginTop:15
+  
   },
   signInLink: {
     color: "#4F46E5",
     fontWeight: "bold",
+    flexDirection:"row"
+   
+    
   },
 });
 

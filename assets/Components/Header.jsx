@@ -4,8 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { UserContext,PostsContext } from "./user/Post-Context"; 
 import { Drawer } from "react-native-paper";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons"; // Icons for mobile menu
-// import LinearGradient from "react-native-linear-gradient";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons"; 
+import { SafeAreaView } from "react-native-safe-area-context";
+import { HoverEffect } from "react-native-gesture-handler";
 
 const Header = () => {
   const navigation = useNavigation();
@@ -21,7 +22,7 @@ const Header = () => {
         setUsername(null);
         setPosts([]);
         Alert.alert("Logged Out", "You have been logged out successfully.");
-        navigation.navigate("Signin"); 
+        navigation.navigate("SignIn"); 
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -30,8 +31,8 @@ const Header = () => {
 
   // Navigation links
   const navigationLinks = [
-    { name: "Thoughts", screen: "ThoughtsScreen" },
-    { name: "Message", screen: "MessageScreen" },
+    { name: "Thoughts", screen: "Chats" },
+    { name: "Message", screen: "Message" },
     { name: "Marketplace", screen: "MarketplaceScreen" },
     { name: "About", screen: "AboutScreen" },
   ];
@@ -45,11 +46,8 @@ const Header = () => {
   };
 
   return (
-//     <LinearGradient 
-//     colors={["#B3E5FC", "#E3F2FD", "#F5F5F5"]} 
-//     style={styles.background}
-//   >
-    
+ 
+    <SafeAreaView>
     <View style={styles.header}>
       {/* Logo */}
       <Image
@@ -95,7 +93,8 @@ const Header = () => {
         </Drawer.Section>
       )}
     </View>
-    // </LinearGradient>
+    </SafeAreaView>
+    
   );
 };
 
@@ -125,15 +124,15 @@ const styles = StyleSheet.create({
     padding: 8,
     marginTop: 5, 
   },
-//   background: {
-//     flex: 1, 
-//     paddingVertical: 20, 
-//     paddingHorizontal: 15,
-//   },
+  background: {
+    flex: 1, 
+    paddingVertical: 20, 
+    paddingHorizontal: 15,
+  },
  
   drawer: {
     position: "absolute",
-    top: 60,
+    top: 90,
     right: 10,
     width: 180,
     backgroundColor: "#fff",
@@ -145,7 +144,9 @@ const styles = StyleSheet.create({
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
-  },
+},
+
+
   navText: {
     fontSize: 16,
     color: "#333",

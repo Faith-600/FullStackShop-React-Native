@@ -4,24 +4,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 import axios from 'axios';
 import { UserContext } from './assets/Components/user/Post-Context';
 import { Text,StyleSheet,View, } from 'react-native';
-
-// Importing my screens
-
-// import NotFound from './assets/Components/404';
-// import Chats from './assets/Components/Chats';
-// import Market from './Redux/Market';
-// import Checkout from './Redux/Checkout';
-// import Message from './assets/ChatApp/Message';
-// import ItemsDetail from './Redux/ItemsDetail';
+import Chats from './assets/Components/Chats';
 import SignIn from './assets/Components/Signin';
 import Welcome from './assets/Components/Welcome';
 import SignUp from './assets/Components/SignUp';
 import Header from './assets/Components/Header';
+import Message from './assets/ChatWeb/Message';
 
 const Stack = createStackNavigator();
 
 function MainApp() {
-    const {username,setUsername} = useContext(UserContext);
+    const {setUsername} = useContext(UserContext);
     const [loading, setLoading] = useState(true);
   
     useEffect(() => {
@@ -64,13 +57,14 @@ function MainApp() {
       <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
       <Stack.Screen name="Signup" component={SignUp}   options={{ headerShown: false }}/>
       <Stack.Screen name="Welcome" component={Welcome} />
-      {/* Uncomment screens when needed */}
-      {/* <Stack.Screen name="Chats" component={Chats} />
-      <Stack.Screen name="Market" component={Market} />
-      <Stack.Screen name="ItemsDetail" component={ItemsDetail} />
-      <Stack.Screen name="Checkout" component={Checkout} />
+      <Stack.Screen name="Chats" component={Chats} />
       <Stack.Screen name="Message" component={Message} />
-      <Stack.Screen name="NotFound" component={NotFound} /> */}
+
+      {/* <Stack.Screen name="Market" component={Market} /> */}
+      {/* <Stack.Screen name="ItemsDetail" component={ItemsDetail} /> */}
+      {/* <Stack.Screen name="Checkout" component={Checkout} /> */}
+     
+      {/* <Stack.Screen name="NotFound" component={NotFound} />  */}
     </Stack.Navigator>
   </NavigationContainer>
 );
