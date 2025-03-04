@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState,useCallback } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { UserContext } from "../Components/user/Post-Context";
 import axios from "axios";
-import SenderChat from "./SenderChat";
+
 
 
 
@@ -19,7 +19,6 @@ const ChatWeb = () => {
   const [receiver, setReceiver] = useState(null);
   const { username } = useContext(UserContext);
   const [message, setMessage] = useState("");
-  const [lastMessages, setLastMessages] = useState({});
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -29,59 +28,87 @@ const ChatWeb = () => {
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
 
+
   useEffect(() => {
-    if (!receiver) return;
-
-    const fetchMessages = () => {
-      axios
-        .get(`https://full-stack-shop-backend.vercel.app/messages/${username}/${receiver}`)
-        .then((response) => {
-
-          setMessages(response.data);
-
-          if (response.data.length > 0) {
-            const lastMessage = response.data[response.data.length - 1];
-            setLastMessages((prevMessages) => ({
-              ...prevMessages,
-              [receiver]: {
-                content: lastMessage.content,
-                timestamp: new Date(lastMessage.timestamp),
-              },
-            }));
-          }
-        })
-        .catch((error) => console.error("Error fetching messages:", error));
+    if (!receiver) {
+      setMessages([]);
+      return;
+    }
+  
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get(
+          `https://full-stack-shop-backend.vercel.app/messages/${username}/${receiver}`
+        );
+        const newMessages = response.data;
+  
+        // Update state only if new messages are different
+        setMessages((prevMessages) => {
+          const prevLastMessage = prevMessages[prevMessages.length - 1];
+          const newLastMessage = newMessages[newMessages.length - 1];
+  
+          return prevLastMessage?.content !== newLastMessage?.content
+            ? newMessages
+            : prevMessages;
+        });
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
     };
-
+  
     fetchMessages();
     const interval = setInterval(fetchMessages, 3000);
-
+  
     return () => clearInterval(interval);
-  }, []);
+  }, [receiver, username]);
+  
+   
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim() && receiver) {
-      const newMsg = { sender: username, receiver, content: message, timestamp: new Date() };
-
-      axios
-        .post("https://full-stack-shop-backend.vercel.app/messages", newMsg)
-        .then(() => {
-          setMessage("");
-          setMessages((prevMessages) => {
-            const existingMessage = prevMessages.find((msg) => msg.content === newMsg.content && msg.timestamp.getTime() === newMsg.timestamp.getTime());
-            if (!existingMessage) {
-              return [...prevMessages, newMsg];
-            }
-            return prevMessages;
-          });
-         setLastMessages((prevMessages) => ({
-            ...prevMessages,
-            [receiver]: { content: newMsg.content, timestamp: new Date() },
-          }));
-        })
-        .catch((error) => console.error("Error sending message:", error));
+      const newMsg = {
+        sender: username,
+        receiver,
+        content: message,
+        timestamp: new Date(),
+      };
+  
+      setMessages((prevMessages) => [...prevMessages, newMsg]); 
+  
+      try {
+        await axios.post(
+          "https://full-stack-shop-backend.vercel.app/messages",
+          newMsg
+        );
+        setMessage(""); // Clear input after successful send
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
+
+    // Render individual message
+    const renderMessage = useCallback(({ item }) => {
+      const isSender = item.sender === username;
+      return (
+        <View
+          style={[
+            styles.messageContainer,
+            isSender ? styles.sentMessage : styles.receivedMessage,
+          ]}
+        >
+          <View style={styles.messageBubble}>
+            <Text style={styles.sender}>
+              {isSender ? "You" : item.sender}
+            </Text>
+            <Text style={styles.messageText}>{item.content}</Text>
+          </View>
+        </View>
+      );
+    }, [username]);
+
+
+
 
   return (
     <View style={styles.container}>
@@ -90,8 +117,8 @@ const ChatWeb = () => {
         <Text style={styles.header}>Chat App</Text>
         <FlatList
           data={users}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          keyExtractor={(item) => item._id}        
+           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.userItem}
               onPress={() => setReceiver(item.name)}
@@ -104,10 +131,7 @@ const ChatWeb = () => {
                 <Text style={styles.username}>
                   {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
                 </Text>
-                <Text style={styles.lastMessage}>
-                  {lastMessages[item.name]?.content || ""}
-                </Text>
-              </View>
+               </View>
             </TouchableOpacity>
             )}
           nestedScrollEnabled={true} 
@@ -122,26 +146,12 @@ const ChatWeb = () => {
 
         {/* Chat Messages */}
         <FlatList
-          data={messages || []}
-          keyExtractor={(item, index) => item?.id?.toString() || index.toString()} // Unique key
-          renderItem={({ item }) =>
-            item.sender === username ? (
-              <SenderChat messages={messages} username={username}/>
-            ) : (
-              <View style={styles.receivedMessage}>
-                <Image
-                  source={{ uri: `https://robohash.org/${receiver}` }}
-                  style={styles.avatarSmall}
-                />
-                <View style={styles.messageBubble}>
-                  <Text style={styles.messageText}>{item.content}</Text>
-                </View>
-              </View>
-            )
-          }
-          nestedScrollEnabled={true} 
-        />
-
+          data={messages}
+          keyExtractor={(item) => item._id}        
+            renderItem={renderMessage}
+            nestedScrollEnabled={true} 
+            />
+          
 
         {/* Chat Input */}
         <View style={styles.inputContainer}>
@@ -153,8 +163,8 @@ const ChatWeb = () => {
           />
           <TouchableOpacity
             style={[styles.sendButton, username === "Guest" && styles.disabledButton]}
-            onPress={sendMessage}
-            disabled={username === "Guest"}
+            onPress={sendMessage}           
+             disabled={username === "Guest"}
           >
             <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
@@ -171,101 +181,99 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   usersContainer: {
-    width: "30%",
-    backgroundColor: "#fff",
+    flex: 1,
     borderRightWidth: 1,
-    borderRightColor: "#ccc",
-    paddingVertical: 10,
+    borderColor: "#ccc",
   },
   header: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
-    backgroundColor: "#4f46e5",
-    padding: 16,
-    textAlign: "center",
+    padding: 10,
+    backgroundColor: "#f0f0f0",
   },
   userItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderColor: "#ccc",
   },
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: 25,
+    borderRadius: 20,
     marginRight: 10,
   },
   username: {
-    fontSize: 16,
     fontWeight: "bold",
-  },
-  lastMessage: {
-    fontSize: 14,
-    color: "#888",
   },
   chatContainer: {
-    flex: 1,
-    paddingVertical: 10,
+    flex: 2,
   },
   chatHeader: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-  },
-  receivedMessage: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-    paddingHorizontal: 16,
-  },
-  avatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  messageBubble: {
-    backgroundColor: "#90cdf4",
     padding: 10,
+    backgroundColor: "#f0f0f0",
+  },
+  messageContainer: {
+    padding: 10,
+  },
+  sentMessage: {
+    alignSelf: "flex-end",
+    backgroundColor: "#dcf8c6",
     borderRadius: 10,
+    padding: 10,
+    marginVertical: 5,
     maxWidth: "80%",
   },
+  receivedMessage: {
+    alignSelf: "flex-start",
+    backgroundColor: "#ececec",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 5,
+    maxWidth: "80%",
+  },
+  messageBubble: {
+    flexDirection: "column",
+  },
+  sender: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
   messageText: {
-    color: "#000",
+    fontSize: 16,
   },
   inputContainer: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    padding: 10,
     borderTopWidth: 1,
-    borderTopColor: "#ccc",
+    borderColor: "#ccc",
   },
   input: {
     flex: 1,
-    padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "#fff",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginRight: 10,
   },
   sendButton: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#007bff",
+    borderRadius: 20,
+    paddingHorizontal: 20,
     paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  disabledButton: {
-    backgroundColor: "#ccc",
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
 });
 

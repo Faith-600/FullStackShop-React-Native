@@ -33,7 +33,7 @@ const Header = () => {
   const navigationLinks = [
     { name: "Thoughts", screen: "Chats" },
     { name: "Message", screen: "Message" },
-    { name: "Marketplace", screen: "MarketplaceScreen" },
+    { name: "Market", screen: "Market" },
     { name: "About", screen: "AboutScreen" },
   ];
 

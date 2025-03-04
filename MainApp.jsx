@@ -10,6 +10,9 @@ import Welcome from './assets/Components/Welcome';
 import SignUp from './assets/Components/SignUp';
 import Header from './assets/Components/Header';
 import Message from './assets/ChatWeb/Message';
+import Market from './assets/Redux/Market';
+import ItemsDetail from './assets/Redux/ItemsDetail';
+import Checkout from './assets/Redux/Checkout';
 
 const Stack = createStackNavigator();
 
@@ -27,11 +30,9 @@ function MainApp() {
             console.log("Setting username to:", res.data.user.name); // Log before updating state
 
             setUsername(res.data.user.name);
-            // localStorage.setItem('username', res.data.name);
           } else {
             console.log("Setting username to: Guest");
             setUsername('Guest');
-            // localStorage.removeItem('username');
           }
         })
         .catch((err) => console.error(err))
@@ -59,10 +60,9 @@ function MainApp() {
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Chats" component={Chats} />
       <Stack.Screen name="Message" component={Message} />
-
-      {/* <Stack.Screen name="Market" component={Market} /> */}
-      {/* <Stack.Screen name="ItemsDetail" component={ItemsDetail} /> */}
-      {/* <Stack.Screen name="Checkout" component={Checkout} /> */}
+      <Stack.Screen name="Market" component={Market} />
+      <Stack.Screen name="ItemsDetail" component={ItemsDetail} />
+      <Stack.Screen name="Checkout" component={Checkout} />
      
       {/* <Stack.Screen name="NotFound" component={NotFound} />  */}
     </Stack.Navigator>
