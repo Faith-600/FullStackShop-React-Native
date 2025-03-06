@@ -138,17 +138,14 @@ export default function Chats() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {posts.length > 0 ? (
-        <FlatList
-          data={posts}
-          keyExtractor={(post) => `post-${post._id}`}
-          renderItem={renderPost}
-        />
-      ) : (
-        <Text style={styles.noPosts}>No posts available</Text>
-      )}
-    </ScrollView>
+    <FlatList
+    style={styles.container}
+    data={posts}
+    keyExtractor={(post) => `post-${post._id}`}
+    renderItem={renderPost}
+    ListEmptyComponent={<Text style={styles.noPosts}>No posts available</Text>}
+  />
+  
   );
 }
 
@@ -156,8 +153,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     paddingVertical: 24,
+    flexShrink: 1
   },
   postContainer: {
     backgroundColor: "#f9f9f9",
@@ -171,10 +169,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   avatar: {
-    width: 48,
-    height: 48,
+    width: 46,
+    height: 46,
     borderRadius: 24,
-    marginRight: 12,
+    // marginRight: 3,
   },
   username: {
     fontSize: 16,

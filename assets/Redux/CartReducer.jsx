@@ -5,6 +5,9 @@ const initialState = {
     Subtotal: 0,
 };
 
+
+
+
 // Helper function to update AsyncStorage
 const updateCartStorage = async (username, cart) => {
     try {
@@ -42,6 +45,7 @@ function CartReducer(state = initialState, action) {
                 ...state,
                 cart: newCart
             };
+            
 
         case 'SET_CART':
             return {

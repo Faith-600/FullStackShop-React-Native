@@ -1,16 +1,14 @@
-import React from "react";
-import { View, Text, Image, FlatList, StyleSheet } from "react-native";
+import React,{useMemo} from "react";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 
 const SenderChat = ({ messages, username }) => {
-//   if (!messages) {
-//     return <Text style={styles.noMessages}>No messages yet.</Text>;
-//   }
 
+const memoizedMessage = useMemo(()=> messages,[messages])
   return (
     <View style={styles.container}>
       <FlatList
-        data={messages}
-        keyExtractor={(item, index) => index.toString()}
+        data={memoizedMessage}
+        keyExtractor={(item, index) => item._id ? item._id.toString() : `${index}`}
         renderItem={({ item }) => (
           <View
             style={[

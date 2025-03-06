@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "./user/Post-Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { loadCart } from "../Redux/LoadCart";
 
 export default function SignIn() {
   const [values, setValues] = useState({ email: "", password: "" });
@@ -27,11 +27,11 @@ export default function SignIn() {
       const res = await axios.post("https://full-stack-shop-backend.vercel.app/login", values);
   
       if (res.data.Login) {
-        console.log("Username", res.data.user.name);
-        
-        setUsername(res.data.user.name);
+        const loggedInUsername = res.data.user.name;
+        setUsername(loggedInUsername);
         await AsyncStorage.setItem("userId", res.data.user._id); 
-        navigation.navigate("Welcome");
+         navigation.navigate("Welcome");
+        //  dispatch(loadCart(loggedInUsername))
       } else {
         Alert.alert("Error", "Password or Email is incorrect");
       }

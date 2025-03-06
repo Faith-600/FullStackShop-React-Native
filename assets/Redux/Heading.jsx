@@ -4,19 +4,23 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; 
 
+
 function Heading() {
-    const cart = useSelector(state => state.cart);
+    const cart = useSelector(state => state.cart.cart);
     const navigation = useNavigation(); 
+     
+     
 
     return (
         <TouchableOpacity 
             style={styles.container} 
             onPress={() => navigation.navigate('Checkout')} 
         >
-            <FontAwesome name="shopping-cart" size={24} color="black" />
+           
             <View style={styles.cartBadge}>
-                <Text style={styles.cartText}>{cart.cart.length}</Text>
+                <Text style={styles.cartText}>{cart.length}</Text>
             </View>
+            <FontAwesome name="shopping-cart" size={24} color="black" />
         </TouchableOpacity>
     );
 }
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     //     alignItems: 'center',
     // },
     cartText: {
-        color: 'white',
+        color: 'black',
         fontSize: 12,
         fontWeight: 'bold',
     },

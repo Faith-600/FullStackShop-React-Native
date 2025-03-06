@@ -35,12 +35,12 @@ export default function CommentForm({ handleSubmit, submitLabel }) {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               onPress={onSubmit}
-              disabled={username.toLowerCase() === "guest"}
+              disabled={username === "Guest"}
             >
               <Text
                 style={[
                   styles.submitButton,
-                  username.toLowerCase() === "guest" && styles.disabledButton,
+                  username === "Guest" && styles.disabledButton,
                 ]}
               >
                 Submit
@@ -57,12 +57,12 @@ export default function CommentForm({ handleSubmit, submitLabel }) {
       {!isReplying && (
         <TouchableOpacity
           onPress={toggleReplyForm}
-          disabled={username.toLowerCase() === "guest"}
+          disabled={username === "Guest"}
         >
           <Text
             style={[
               styles.replyButton,
-              username.toLowerCase() === "guest" && styles.disabledButton,
+              username === "Guest" && styles.disabledButton,
             ]}
           >
             {submitLabel}

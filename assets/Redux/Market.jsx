@@ -7,7 +7,7 @@ import Addtocart from './AddToCart';
 import { UserContext } from '../Components/user/Post-Context';
 import { useNavigation } from '@react-navigation/native';
 import Heading from './Heading';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import   { loadCart }  from './LoadCart';
 
 function Market() {
   const { username } = useContext(UserContext);
@@ -15,26 +15,11 @@ function Market() {
   const navigation = useNavigation();
 
   const handleAddToCart = (product) => {
-    const action = Addtocart({
-      id: product.id,
-      description: product.description,
-      image: product.image,
-      title: product.price,
-      price: product.price,
-      username,
-    });
-    dispatch(action);
+    dispatch(Addtocart(product));
   };
 
   useEffect(() => {
-    const loadCart = async () => {
-    if (username) {
-      const savedCart = await AsyncStorage.getItem(`cart_${username}`);
-      const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-      dispatch({ type: 'SET_CART', payload: parsedCart});
-    }
-  };
-  loadCart();
+   dispatch(loadCart(username))
   }, [username, dispatch]);
 
   const { isLoading, data: products, error } = useQuery({
@@ -58,7 +43,7 @@ function Market() {
       <Heading />
       <FlatList
         data={products}
-        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         numColumns={2}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (

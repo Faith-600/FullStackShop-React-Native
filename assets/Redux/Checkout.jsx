@@ -18,7 +18,7 @@ function Checkout() {
             ) : (
                 <FlatList
                     data={cart.cart}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item, index) => `${item.id}-${index}`}
                     renderItem={({ item }) => (
                         <View style={styles.productContainer}>
                             <Image source={{ uri: item.image }} style={styles.image} />
