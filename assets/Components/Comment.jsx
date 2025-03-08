@@ -48,8 +48,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   commentHeader: {
-    flexDirection: "row",
-    alignItems: "center",
     marginBottom: 8,
   },
   avatar: {

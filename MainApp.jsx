@@ -13,7 +13,7 @@ import Message from './assets/ChatWeb/Message';
 import Market from './assets/Redux/Market';
 import ItemsDetail from './assets/Redux/ItemsDetail';
 import Checkout from './assets/Redux/Checkout';
-
+import About from './assets/About/About';
 const Stack = createStackNavigator();
 
 function MainApp() {
@@ -63,8 +63,7 @@ function MainApp() {
       <Stack.Screen name="Market" component={Market} />
       <Stack.Screen name="ItemsDetail" component={ItemsDetail} />
       <Stack.Screen name="Checkout" component={Checkout} />
-     
-      {/* <Stack.Screen name="NotFound" component={NotFound} />  */}
+      <Stack.Screen name="About" component={About} />
     </Stack.Navigator>
   </NavigationContainer>
 );

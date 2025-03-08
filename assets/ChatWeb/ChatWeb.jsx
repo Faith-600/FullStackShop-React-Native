@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState,useCallback } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,15 +11,13 @@ import {
 import { UserContext } from "../Components/user/Post-Context";
 import axios from "axios";
 
-
-
-
 const ChatWeb = () => {
   const [users, setUsers] = useState([]);
   const [receiver, setReceiver] = useState(null);
   const { username } = useContext(UserContext);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false); 
 
   useEffect(() => {
     axios
@@ -28,25 +26,21 @@ const ChatWeb = () => {
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
 
-
   useEffect(() => {
     if (!receiver) {
       setMessages([]);
       return;
     }
-  
+
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
           `https://full-stack-shop-backend.vercel.app/messages/${username}/${receiver}`
         );
         const newMessages = response.data;
-  
-        // Update state only if new messages are different
         setMessages((prevMessages) => {
           const prevLastMessage = prevMessages[prevMessages.length - 1];
           const newLastMessage = newMessages[newMessages.length - 1];
-  
           return prevLastMessage?.content !== newLastMessage?.content
             ? newMessages
             : prevMessages;
@@ -55,14 +49,11 @@ const ChatWeb = () => {
         console.error("Error fetching messages:", error);
       }
     };
-  
+
     fetchMessages();
     const interval = setInterval(fetchMessages, 3000);
-  
     return () => clearInterval(interval);
   }, [receiver, username]);
-  
-   
 
   const sendMessage = async () => {
     if (message.trim() && receiver) {
@@ -72,23 +63,21 @@ const ChatWeb = () => {
         content: message,
         timestamp: new Date(),
       };
-  
-      setMessages((prevMessages) => [...prevMessages, newMsg]); 
-  
+      setMessages((prevMessages) => [...prevMessages, newMsg]);
       try {
         await axios.post(
           "https://full-stack-shop-backend.vercel.app/messages",
           newMsg
         );
-        setMessage(""); // Clear input after successful send
+        setMessage("");
       } catch (error) {
         console.error("Error sending message:", error);
       }
     }
   };
 
-    // Render individual message
-    const renderMessage = useCallback(({ item }) => {
+  const renderMessage = useCallback(
+    ({ item }) => {
       const isSender = item.sender === username;
       return (
         <View
@@ -105,98 +94,160 @@ const ChatWeb = () => {
           </View>
         </View>
       );
-    }, [username]);
+    },
+    [username]
+  );
 
+  const renderUserItem = ({ item }) => (
+    <TouchableOpacity
+      style={[
+        styles.userItem,
+        receiver === item.name && styles.selectedUser
+      ]}
+      onPress={() => setReceiver(item.name)}
+    >
+      <Image
+        source={{ uri: `https://robohash.org/${item.name}` }}
+        style={styles.avatar}
+      />
+      <View>
+        <Text style={styles.username}>
+          {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
-
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
 
   return (
     <View style={styles.container}>
-      {/* Users List */}
-      <View style={styles.usersContainer}>
-        <Text style={styles.header}>Chat App</Text>
-        <FlatList
-          data={users}
-          keyExtractor={(item) => item._id}        
-           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.userItem}
-              onPress={() => setReceiver(item.name)}
-            >
-              <Image
-                source={{ uri: `https://robohash.org/${item.name}` }}
-                style={styles.avatar}
-               />
-              <View>
-                <Text style={styles.username}>
-                  {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
-                </Text>
-               </View>
-            </TouchableOpacity>
-            )}
-          nestedScrollEnabled={true} 
-        />
-      </View>
-
-      {/* Chat Section */}
-      <View style={styles.chatContainer}>
-        <Text style={styles.chatHeader}>
-          {receiver || "Select a user to chat"}
+      {/* Toggle Button */}
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleSidebar}>
+        <Text style={styles.toggleButtonText}>
+          {isSidebarVisible ? "◄" : "►"}
         </Text>
+      </TouchableOpacity>
 
-        {/* Chat Messages */}
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item._id}        
-            renderItem={renderMessage}
-            nestedScrollEnabled={true} 
-            />
-          
-
-        {/* Chat Input */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Type a message..."
-            value={message}
-            onChangeText={setMessage}
+      {/* Sidebar with Users */}
+      {isSidebarVisible && (
+        <View style={styles.sidebar}>
+          <Text style={styles.header}>Chat Users</Text>
+          <FlatList
+            data={users.filter(user => user.name !== username)}
+            keyExtractor={(item) => item._id}
+            renderItem={renderUserItem}
+            style={styles.userList}
+            nestedScrollEnabled
           />
-          <TouchableOpacity
-            style={[styles.sendButton, username === "Guest" && styles.disabledButton]}
-            onPress={sendMessage}           
-             disabled={username === "Guest"}
-          >
-            <Text style={styles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
         </View>
+      )}
+
+      {/* Main Chat Area */}
+      <View style={[styles.chatContainer, !isSidebarVisible && styles.fullWidth]}>
+        {receiver ? (
+          <>
+            <View style={styles.chatHeader}>
+              <Text style={styles.chatHeaderText}>
+              <Image
+        source={{ uri: `https://robohash.org/${receiver}` }}
+        style={styles.avatar}
+      /> {receiver}
+              </Text>
+            </View>
+            <FlatList
+              data={messages}
+              keyExtractor={(item, index) => item._id || index.toString()}
+              renderItem={renderMessage}
+              style={styles.messagesList}
+              nestedScrollEnabled
+            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Type a message..."
+                value={message}
+                onChangeText={setMessage}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  username === "Guest" && styles.disabledButton,
+                ]}
+                onPress={sendMessage}
+                disabled={username === "Guest"}
+              >
+                <Text style={styles.sendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : (
+          <View style={styles.noChat}>
+            <Text>Select a user to start chatting</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
+    backgroundColor: "#fff",
+    position: "relative",
   },
-  usersContainer: {
-    flex: 1,
+  toggleButton: {
+    position: "absolute",
+    top: 35,
+    left: 10,
+    zIndex: 1,
+    backgroundColor: "#007bff",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  toggleButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    
+  },
+  sidebar: {
+    width: 250,
+    backgroundColor: "#f8f9fa",
     borderRightWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#dee2e6",
+  },
+  fullWidth: {
+    flex: 1,
   },
   header: {
     fontSize: 20,
     fontWeight: "bold",
-    padding: 10,
-    backgroundColor: "#f0f0f0",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: "#dee2e6",
+    backgroundColor: "#fff",
+    marginTop:50
+  },
+  userList: {
+    flex: 1,
   },
   userItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#eee",
+  },
+  selectedUser: {
+    backgroundColor: "#e9ecef",
   },
   avatar: {
     width: 40,
@@ -205,35 +256,43 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   username: {
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "500",
   },
   chatContainer: {
-    flex: 2,
+    flex: 1,
+    flexDirection: "column",
   },
   chatHeader: {
+    padding: 15,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderColor: "#dee2e6",
+  },
+  chatHeaderText: {
     fontSize: 18,
     fontWeight: "bold",
+    margin:"auto"
+  },
+  messagesList: {
+    flex: 1,
     padding: 10,
-    backgroundColor: "#f0f0f0",
   },
   messageContainer: {
-    padding: 10,
+    marginVertical: 5,
+    maxWidth: "70%",
   },
   sentMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#dcf8c6",
-    borderRadius: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 15,
     padding: 10,
-    marginVertical: 5,
-    maxWidth: "80%",
   },
   receivedMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#ececec",
-    borderRadius: 10,
+    backgroundColor: "rgb(128,128,128)",
+    borderRadius: 15,
     padding: 10,
-    marginVertical: 5,
-    maxWidth: "80%",
   },
   messageBubble: {
     flexDirection: "column",
@@ -241,24 +300,28 @@ const styles = StyleSheet.create({
   sender: {
     fontWeight: "bold",
     marginBottom: 5,
+    color: "#fff",
   },
   messageText: {
     fontSize: 16,
+    color: "#fff",
   },
   inputContainer: {
     flexDirection: "row",
     padding: 10,
+    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#dee2e6",
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ced4da",
     borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 8,
     marginRight: 10,
+    backgroundColor: "#fff",
   },
   sendButton: {
     backgroundColor: "#007bff",
@@ -266,7 +329,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     justifyContent: "center",
-    alignItems: "center",
   },
   sendButtonText: {
     color: "#fff",
@@ -274,6 +336,11 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: "#ccc",
+  },
+  noChat: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

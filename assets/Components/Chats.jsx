@@ -58,9 +58,6 @@ export default function Chats() {
   const addComment = async (text, postId) => {
   if (!text) return;
 
-  console.log(" Debugging addComment:");
-  console.log("Text:", text);
-  console.log("Post ID Received (Before Fix):", postId, typeof postId);
 
   if (!postId) {
     console.error("Error: postId is undefined or missing!");
@@ -84,8 +81,7 @@ export default function Chats() {
       }
     );
 
-    console.log("Posting comment:", { text, username, postId });
-    console.log("Response Status:", response.status);
+   
 
     if (!response.ok) throw new Error("Failed to save comment");
 
@@ -153,7 +149,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // paddingHorizontal: 16,
+    paddingHorizontal: 16,
     paddingVertical: 24,
     flexShrink: 1
   },
@@ -164,15 +160,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
     marginBottom: 8,
   },
   avatar: {
     width: 46,
     height: 46,
     borderRadius: 24,
-    // marginRight: 3,
+    marginRight:"auto",
   },
   username: {
     fontSize: 16,

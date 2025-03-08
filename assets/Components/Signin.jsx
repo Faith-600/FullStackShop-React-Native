@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "./user/Post-Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loadCart } from "../Redux/LoadCart";
+
 
 export default function SignIn() {
   const [values, setValues] = useState({ email: "", password: "" });

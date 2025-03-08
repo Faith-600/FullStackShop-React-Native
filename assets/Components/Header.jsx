@@ -31,10 +31,12 @@ const Header = () => {
 
   // Navigation links
   const navigationLinks = [
+    {name: "Home", screen: "Welcome"},
     { name: "Thoughts", screen: "Chats" },
     { name: "Message", screen: "Message" },
     { name: "Market", screen: "Market" },
-    { name: "About", screen: "AboutScreen" },
+    { name: "About", screen: "About" },
+    
   ];
 
   // Unique user color generator
