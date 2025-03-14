@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import Custom from "./Custom"; 
 
 const SignUp = () => {
   const [values, setValues] = useState({ name: "", email: "", password: "" });
-  const [alert, setAlert] = useState({ show: false, msg: "", type: "" });
   const navigation = useNavigation();
 
   const handleInput = (key, value) => {
@@ -18,11 +16,11 @@ const SignUp = () => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!namePattern.test(values.name)) {
-      showAlert("danger", "Name must be 2-50 alphabetic characters long.");
+      showAlert("Name must be 2-50 alphabetic characters long.");
       return;
     }
     if (!passwordPattern.test(values.password)) {
-      showAlert("danger", "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.");
+      showAlert("Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.");
       return;
     }
 
@@ -33,22 +31,19 @@ const SignUp = () => {
     } catch (err) {
       console.log(err.response);
       if (err.response?.data?.message === "Email already in use") {
-        showAlert("danger", "This email is already registered. Please use a different email.");
+        showAlert("This email is already registered. Please use a different email.");
       } else {
-        showAlert("danger", "An error occurred during registration. Please try again.");
+        showAlert("An error occurred during registration. Please try again.");
       }
     }
   };
 
-  const showAlert = (type, msg) => {
-    setAlert({ show: true, type, msg });
-    setTimeout(() => setAlert({ show: false, msg: "", type: "" }), 3000);
+  const showAlert = (msg) => {
+    Alert.alert("Error", msg, [{ text: "OK" }]);
   };
 
   return (
     <View style={styles.container}>
-      {alert.show && <Custom type={alert.type} msg={alert.msg} />}
-      
       <Image
         source={{ uri: "https://img.freepik.com/premium-vector/blue-waves-simple-logo-design_302761-1052.jpg?w=996" }}
         style={styles.logo}
@@ -133,14 +128,10 @@ const styles = StyleSheet.create({
   signInText: {
     fontSize: 14,
     color: "#555",
-  
   },
   signInLink: {
     color: "#4F46E5",
     fontWeight: "bold",
-    flexDirection:"row"
-   
-    
   },
 });
 

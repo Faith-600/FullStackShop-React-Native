@@ -10,20 +10,34 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "owner": "faith-600",
+      "scheme": "fullstackshop"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.faith600.FullStackShop"
+      "package": "com.faith600.FullStackShop",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5018781d-0ecc-40ca-9870-711c2a1e6833"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5018781d-0ecc-40ca-9870-711c2a1e6833"
     }
   }
 }

@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import axios from 'axios';
 import { UserContext } from './assets/Components/user/Post-Context';
-import { Text,StyleSheet,View, } from 'react-native';
+import { Text,StyleSheet,View,Platform, TouchableOpacity,Alert } from 'react-native';
 import Chats from './assets/Components/Chats';
 import SignIn from './assets/Components/Signin';
 import Welcome from './assets/Components/Welcome';
@@ -14,13 +14,17 @@ import Market from './assets/Redux/Market';
 import ItemsDetail from './assets/Redux/ItemsDetail';
 import Checkout from './assets/Redux/Checkout';
 import About from './assets/About/About';
+
 const Stack = createStackNavigator();
+
+
 
 function MainApp() {
     const {setUsername} = useContext(UserContext);
     const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
+
+ 
+   useEffect(() => {
         console.log("Fetching user data...");
       axios
         .get('https://full-stack-shop-backend.vercel.app')
@@ -65,8 +69,10 @@ function MainApp() {
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="About" component={About} />
     </Stack.Navigator>
+    
   </NavigationContainer>
 );
+
 }
 const styles = StyleSheet.create({
     loadingContainer: {
@@ -79,6 +85,7 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
       margin:"auto"
      },
+   
   })
 
 export default MainApp

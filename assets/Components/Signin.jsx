@@ -4,7 +4,34 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "./user/Post-Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications'
+import * as Device from 'expo-device';
 
+async function registerForPushNotificationsAsync() {
+  if (!Device.isDevice) {
+    Alert.alert('Error', 'Must use a physical device');
+    return null;
+  }
+  const { status } = await Notifications.getPermissionsAsync();
+  let finalStatus = status;
+  if (status !== 'granted') {
+    const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    finalStatus = newStatus;
+  }
+  if (finalStatus !== 'granted') {
+    Alert.alert('Error', 'Push notification permissions denied');
+    return null;
+  }
+  try {
+    const token = (await Notifications.getExpoPushTokenAsync()).data; // No projectId needed after publish
+    console.log('Expo Push Token:', token);
+    return token;
+  } catch (error) {
+    console.error('Token error:', error);
+    Alert.alert('Token Error', error.message);
+    return null;
+  }
+}
 
 export default function SignIn() {
   const [values, setValues] = useState({ email: "", password: "" });
@@ -16,6 +43,8 @@ export default function SignIn() {
   };
 
 
+ 
+
   const handleSubmit = async () => {
     if (!values.email || !values.password) {
       setUsername("Guest");
@@ -24,22 +53,41 @@ export default function SignIn() {
     }
   
     try {
-      const res = await axios.post("https://full-stack-shop-backend.vercel.app/login", values);
+
+       // Get the Expo Push Token
+    const pushToken = await registerForPushNotificationsAsync();
+    console.log('Push Token:', pushToken);
+
+      const res = await axios.post("https://full-stack-shop-backend.vercel.app/login",{
+     ...values,
+        pushToken:pushToken || undefined
+      } );
   
       if (res.data.Login) {
         const loggedInUsername = res.data.user.name;
         setUsername(loggedInUsername);
         await AsyncStorage.setItem("userId", res.data.user._id); 
          navigation.navigate("Welcome");
-        //  dispatch(loadCart(loggedInUsername))
       } else {
         Alert.alert("Error", "Password or Email is incorrect");
       }
     } catch (error) {
+      console.error('Login error:', error);
       Alert.alert("Error", "An error occurred during login. Please try again.");
     }
   };
   
+  // Function to request permission & get Expo Push Token
+async function registerForPushNotificationsAsync() {
+  const { status } = await Notifications.getPermissionsAsync();
+  if (status !== "granted") {
+    Alert.alert("Permission Denied", "Push notifications are disabled.");
+    return null;
+  }
+
+  const tokenData = await Notifications.getExpoPushTokenAsync();
+  return tokenData.data;
+}
 
   return (
     <View style={styles.container}>

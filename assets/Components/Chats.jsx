@@ -17,7 +17,7 @@ export default function Chats() {
       const response = await fetch(
         `https://full-stack-shop-backend.vercel.app/api/posts/${postId}/comments`
       );
-      console.log("Response Status:", response.status);
+      // console.log("Response Status:", response.status);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch comments. Status: ${response.status}`);

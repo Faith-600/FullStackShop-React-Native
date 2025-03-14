@@ -161,10 +161,7 @@ const Welcome = () => {
                   onChangeText={(text) => setEditContent(text)}
                   multiline
                 />
-                <TouchableOpacity style={styles.button} onPress={() =>{
-                  console.log("updated item:", item._id);
-                 handleUpdate(item._id)}
-                } >
+                <TouchableOpacity style={styles.button} onPress={() =>handleUpdate(item._id)} >
                   <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
               </>
@@ -198,10 +195,7 @@ const Welcome = () => {
                    <IconButton icon='trash-can'
                     size={20}
                     color="red"
-                    onPress={() =>{
-                      console.log("Deleting item:", item);
-                 console.log("Deleting post with ID:", item.id);
-                      handleDelete(item._id)}}
+                    onPress={() => handleDelete(item._id)}
                   />
                 </View>
               </>
