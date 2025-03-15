@@ -46,15 +46,18 @@ const styles = StyleSheet.create({
   commentContainer: {
     marginLeft: 20,
     marginBottom: 16,
+      
   },
   commentHeader: {
     marginBottom: 8,
+    flex:1,
+     flexDirection:"row"
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
+    // marginRight: 20,
   },
   username: {
     fontWeight: "bold",
@@ -63,6 +66,7 @@ const styles = StyleSheet.create({
   commentText: {
     fontSize: 14,
     color: "#333",
+    marginRight:40
   },
   replyForm: {
     marginLeft: 20,

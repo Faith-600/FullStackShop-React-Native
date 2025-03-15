@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { UserContext } from "../Components/user/Post-Context";
 import axios from "axios";
@@ -99,6 +100,7 @@ const ChatWeb = () => {
   );
 
   const renderUserItem = ({ item }) => (
+    
     <TouchableOpacity
       style={[
         styles.userItem,
@@ -116,6 +118,7 @@ const ChatWeb = () => {
         </Text>
       </View>
     </TouchableOpacity>
+   
   );
 
   const toggleSidebar = () => {

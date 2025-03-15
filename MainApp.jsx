@@ -14,16 +14,61 @@ import Market from './assets/Redux/Market';
 import ItemsDetail from './assets/Redux/ItemsDetail';
 import Checkout from './assets/Redux/Checkout';
 import About from './assets/About/About';
+import * as Notifications from 'expo-notifications'
+import * as Device from 'expo-device';
 
 const Stack = createStackNavigator();
 
-
+async function registerForPushNotificationsAsync() {
+  if (!Device.isDevice) {
+    Alert.alert('Error', 'Must use a physical device');
+    return null;
+  }
+  const { status } = await Notifications.getPermissionsAsync();
+  let finalStatus = status;
+  if (status !== 'granted') {
+    const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    finalStatus = newStatus;
+  }
+  if (finalStatus !== 'granted') {
+    Alert.alert('Error', 'Push notification permissions denied');
+    return null;
+  }
+  try {
+    const token = (await Notifications.getExpoPushTokenAsync()).data; // No projectId needed after publish
+    console.log('Expo Push Token:', token);
+    return token;
+  } catch (error) {
+    console.error('Token error:', error);
+    Alert.alert('Token Error', error.message);
+    return null;
+  }
+}
 
 function MainApp() {
-    const {setUsername} = useContext(UserContext);
+    const {setUsername,username} = useContext(UserContext);
     const [loading, setLoading] = useState(true);
 
- 
+    const updateTokenOnBackend = async (username, token) => {
+      try {
+        console.log('Sending:', { name: username, pushToken: token });
+        await axios.post('https://full-stack-shop-backend.vercel.app/update-token', {
+          name: username,
+          pushToken: token,
+        });
+        console.log('Token updated on backend',response.data);
+      } catch (error) {
+        console.error('Error updating token:', error);
+      }
+    };
+    useEffect(() => {
+      registerForPushNotificationsAsync().then((token) => {
+        if (token) {
+          updateTokenOnBackend(username, token);
+        }
+      });
+    }, [username]);
+
    useEffect(() => {
         console.log("Fetching user data...");
       axios

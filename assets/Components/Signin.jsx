@@ -5,33 +5,9 @@ import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "./user/Post-Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications'
-import * as Device from 'expo-device';
 
-async function registerForPushNotificationsAsync() {
-  if (!Device.isDevice) {
-    Alert.alert('Error', 'Must use a physical device');
-    return null;
-  }
-  const { status } = await Notifications.getPermissionsAsync();
-  let finalStatus = status;
-  if (status !== 'granted') {
-    const { status: newStatus } = await Notifications.requestPermissionsAsync();
-    finalStatus = newStatus;
-  }
-  if (finalStatus !== 'granted') {
-    Alert.alert('Error', 'Push notification permissions denied');
-    return null;
-  }
-  try {
-    const token = (await Notifications.getExpoPushTokenAsync()).data; // No projectId needed after publish
-    console.log('Expo Push Token:', token);
-    return token;
-  } catch (error) {
-    console.error('Token error:', error);
-    Alert.alert('Token Error', error.message);
-    return null;
-  }
-}
+
+
 
 export default function SignIn() {
   const [values, setValues] = useState({ email: "", password: "" });

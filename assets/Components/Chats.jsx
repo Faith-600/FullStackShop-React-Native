@@ -151,22 +151,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 24,
-    flexShrink: 1
+    flexShrink: 1,
+    
   },
   postContainer: {
     backgroundColor: "#f9f9f9",
     padding: 16,
     borderRadius: 10,
     marginBottom: 16,
+    
   },
   userInfo: {
     marginBottom: 8,
+    flexDirection:"row"
+    
   },
   avatar: {
-    width: 46,
-    height: 46,
+    width: 40,
+    height: 40,
     borderRadius: 24,
-    marginRight:"auto",
+    // marginRight:20,
   },
   username: {
     fontSize: 16,
@@ -175,6 +179,8 @@ const styles = StyleSheet.create({
   postContent: {
     fontSize: 14,
     color: "#333",
+    marginRight:40
+    
   },
   noPosts: {
     textAlign: "center",
