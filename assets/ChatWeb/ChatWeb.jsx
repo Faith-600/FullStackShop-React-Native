@@ -114,7 +114,7 @@ const ChatWeb = () => {
       />
       <View>
         <Text style={styles.username}>
-          {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
+           {item.name}
         </Text>
       </View>
     </TouchableOpacity>

@@ -49,25 +49,24 @@ function MainApp() {
     const {setUsername,username} = useContext(UserContext);
     const [loading, setLoading] = useState(true);
 
-    const updateTokenOnBackend = async (username, token) => {
-      try {
-        console.log('Sending:', { name: username, pushToken: token });
-        await axios.post('https://full-stack-shop-backend.vercel.app/update-token', {
-          name: username,
-          pushToken: token,
-        });
-        console.log('Token updated on backend',response.data);
-      } catch (error) {
-        console.error('Error updating token:', error);
-      }
-    };
-    useEffect(() => {
-      registerForPushNotificationsAsync().then((token) => {
-        if (token) {
-          updateTokenOnBackend(username, token);
-        }
-      });
-    }, [username]);
+    // const updateTokenOnBackend = async (username, token) => {
+    //   try {
+    //     // console.log('Sending:', { name: username, pushToken: token });
+    //     await axios.post('https://full-stack-shop-backend.vercel.app/update-token', {
+    //       name: username,
+    //       pushToken: token,
+    //     });
+    //   } catch (error) {
+    //     console.error('Error updating token:', error.message);
+    //   }
+    // };
+    // useEffect(() => {
+    //   registerForPushNotificationsAsync().then((token) => {
+    //     if (token) {
+    //       updateTokenOnBackend(username, token);
+    //     }
+    //   });
+    // }, [username]);
 
    useEffect(() => {
         console.log("Fetching user data...");

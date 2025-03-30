@@ -5,7 +5,7 @@ export const loadCart = (username) => {
     return async (dispatch) => {
         try {
             const currentCart = await AsyncStorage.getItem(`cart_${username}`);
-            const parsedCart = currentCart ? JSON.parse(currentCart) : [];
+           const parsedCart = currentCart ? JSON.parse(currentCart) : [];
 
             dispatch({
                 type: 'SET_CART',

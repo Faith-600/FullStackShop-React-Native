@@ -6,7 +6,6 @@ import { UserContext,PostsContext } from "./user/Post-Context";
 import { Drawer } from "react-native-paper";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons"; 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { HoverEffect } from "react-native-gesture-handler";
 
 const Header = () => {
   const navigation = useNavigation();

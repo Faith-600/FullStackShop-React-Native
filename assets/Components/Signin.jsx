@@ -5,11 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "./user/Post-Context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications'
-
+import { loadCart } from "../Redux/LoadCart";
+import { useDispatch } from "react-redux";
 
 
 
 export default function SignIn() {
+  const dispatch = useDispatch();
   const [values, setValues] = useState({ email: "", password: "" });
   const {  setUsername } = useContext(UserContext);
   const navigation = useNavigation();
@@ -30,6 +32,7 @@ export default function SignIn() {
   
     try {
 
+
        // Get the Expo Push Token
     const pushToken = await registerForPushNotificationsAsync();
     console.log('Push Token:', pushToken);
@@ -43,6 +46,7 @@ export default function SignIn() {
         const loggedInUsername = res.data.user.name;
         setUsername(loggedInUsername);
         await AsyncStorage.setItem("userId", res.data.user._id); 
+          dispatch(loadCart(loggedInUsername)); 
          navigation.navigate("Welcome");
       } else {
         Alert.alert("Error", "Password or Email is incorrect");
